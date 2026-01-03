@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using Soenneker.Extensions.DateTime;
+using Soenneker.Extensions.DateTimeOffsets;
 using Soenneker.Extensions.String;
 using Soenneker.Utils.TimeZones;
 
@@ -15,24 +16,33 @@ public static class StringsFilesExtension
     /// Removes whitespace, appends datetime in file format
     /// </summary>
     [Pure]
-    public static string AppendDateTime(this string? value, System.TimeZoneInfo? timeZoneInfo = null, System.DateTime? utcNow = null)
+    public static string AppendDateTime(this string? value, TimeZoneInfo? timeZoneInfo = null, System.DateTime? utcNow = null)
     {
         utcNow ??= System.DateTime.UtcNow;
         timeZoneInfo ??= Tz.Eastern;
 
-        string result;
+        return AppendCore(value, utcNow.Value.ToTzFileName(timeZoneInfo));
+    }
 
-        if (value != null)
-        {
-            string removedWhiteSpaced = value.RemoveWhiteSpace();
-            result = $"{removedWhiteSpaced}-{utcNow.Value.ToTzFileName(timeZoneInfo)}";
-        }
-        else
-        {
-            result = utcNow.Value.ToTzFileName(timeZoneInfo);
-        }
+    /// <summary>
+    /// Removes whitespace and appends a DateTimeOffset in file-safe format
+    /// </summary>
+    [Pure]
+    public static string AppendDateTimeOffset(this string? value, TimeZoneInfo? timeZoneInfo = null, DateTimeOffset? utcNow = null)
+    {
+        utcNow ??= DateTimeOffset.UtcNow;
+        timeZoneInfo ??= Tz.Eastern;
 
-        return result;
+        return AppendCore(value, utcNow.Value.ToTzFileName(timeZoneInfo));
+    }
+
+    [Pure]
+    private static string AppendCore(string? value, string timestamp)
+    {
+        if (value == null)
+            return timestamp;
+
+        return $"{value.RemoveWhiteSpace()}-{timestamp}";
     }
 
     /// <summary>
