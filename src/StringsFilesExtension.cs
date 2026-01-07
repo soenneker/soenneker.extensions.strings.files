@@ -1,9 +1,11 @@
-﻿using System;
-using System.Diagnostics.Contracts;
-using Soenneker.Extensions.DateTime;
+﻿using Soenneker.Extensions.DateTime;
 using Soenneker.Extensions.DateTimeOffsets;
 using Soenneker.Extensions.String;
+using Soenneker.Utils.PooledStringBuilders;
 using Soenneker.Utils.TimeZones;
+using System;
+using System.Diagnostics.Contracts;
+using System.Runtime.CompilerServices;
 
 namespace Soenneker.Extensions.Strings.Files;
 
@@ -37,20 +39,35 @@ public static class StringsFilesExtension
     }
 
     [Pure]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static string AppendCore(string? value, string timestamp)
     {
         if (value == null)
             return timestamp;
 
-        return $"{value.RemoveWhiteSpace()}-{timestamp}";
+        using var sb = new PooledStringBuilder(64);
+
+        sb.Append(value.RemoveWhiteSpace());
+        sb.Append('-');
+        sb.Append(timestamp);
+
+        return sb.ToString();
     }
 
     /// <summary>
     /// Removes whitespace, appends datetime in file format, and appends the extension
     /// </summary>
     [Pure]
-    public static string ToFileName(this string? value, string extension, System.TimeZoneInfo? timeZoneInfo = null)
+    public static string ToFileName(this string? value, string extension, TimeZoneInfo? timeZoneInfo = null)
     {
-        return $"{value.AppendDateTime(timeZoneInfo)}-{Guid.NewGuid()}.{extension}";
+        using var sb = new PooledStringBuilder(96);
+
+        sb.Append(value.AppendDateTime(timeZoneInfo));
+        sb.Append('-');
+        sb.Append(Guid.NewGuid());
+        sb.Append('.');
+        sb.Append(extension);
+
+        return sb.ToString();
     }
 }
