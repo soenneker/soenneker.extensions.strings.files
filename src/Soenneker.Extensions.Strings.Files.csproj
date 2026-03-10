@@ -44,6 +44,6 @@
       <PackageReference Include="Soenneker.Extensions.DateTime" Version="4.0.1730" />
       <PackageReference Include="Soenneker.Extensions.DateTimeOffsets" Version="4.0.40" />
       <PackageReference Include="Soenneker.Utils.PooledStringBuilders" Version="4.0.15" />
-      <PackageReference Include="Soenneker.Utils.TimeZones" Version="4.0.752" />
+      <PackageReference Include="Soenneker.Utils.TimeZones" Version="4.0.754" />
     </ItemGroup>
 </Project>
