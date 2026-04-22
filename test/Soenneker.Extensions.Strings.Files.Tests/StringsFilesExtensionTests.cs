@@ -1,11 +1,10 @@
-﻿using Soenneker.Tests.Unit;
-using Xunit;
+using Soenneker.Tests.Unit;
 
 namespace Soenneker.Extensions.Strings.Files.Tests;
 
 public sealed class StringsFilesExtensionTests : UnitTest
 {
-    [Fact]
+    [Test]
     public void Default()
     {
 
