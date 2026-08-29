@@ -4,10 +4,25 @@
 [![](https://img.shields.io/github/actions/workflow/status/soenneker/soenneker.extensions.strings.files/codeql.yml?label=CodeQL&style=for-the-badge)](https://github.com/soenneker/soenneker.extensions.strings.files/actions/workflows/codeql.yml)
 
 # ![](https://user-images.githubusercontent.com/4441470/224455560-91ed3ee7-f510-4041-a8d2-3fc093025112.png) Soenneker.Extensions.Strings.Files
-### A collection of helpful file related string extension methods
+A collection of helpful file related string extension methods.
 
 ## Installation
 
-```
+```bash
 dotnet add package Soenneker.Extensions.Strings.Files
 ```
+
+## Quick start
+
+```csharp
+using Soenneker.Extensions.Strings.Files;
+
+// Given an existing string? named value:
+var result = value.AppendDateTime();
+```
+
+## Common operations
+
+- `AppendDateTime()` - Removes whitespace, appends datetime in file format.
+- `AppendDateTimeOffset()` - Removes whitespace and appends a DateTimeOffset in file-safe format.
+- `ToFileName()` - Removes whitespace, appends datetime in file format, and appends the extension.
