@@ -16,6 +16,7 @@ public static class StringsFilesExtension
     /// <summary>
     /// Removes whitespace, appends datetime in file format
     /// </summary>
+    /// <returns>Removes whitespace, appends datetime in file format.</returns>
     [Pure]
     public static string AppendDateTime(this string? value, TimeZoneInfo? timeZoneInfo = null, System.DateTime? utcNow = null)
     {
@@ -31,6 +32,7 @@ public static class StringsFilesExtension
     /// <summary>
     /// Removes whitespace and appends a DateTimeOffset in file-safe format
     /// </summary>
+    /// <returns>Removes whitespace and appends a DateTimeOffset in file-safe format.</returns>
     [Pure]
     public static string AppendDateTimeOffset(this string? value, TimeZoneInfo? timeZoneInfo = null, DateTimeOffset? utcNow = null)
     {
@@ -67,6 +69,7 @@ public static class StringsFilesExtension
     /// <summary>
     /// Removes whitespace, appends datetime in file format, and appends the extension
     /// </summary>
+    /// <returns>Removes whitespace, appends datetime in file format, and appends the extension.</returns>
     [Pure]
     public static string ToFileName(this string? value, string extension, TimeZoneInfo? timeZoneInfo = null)
     {
