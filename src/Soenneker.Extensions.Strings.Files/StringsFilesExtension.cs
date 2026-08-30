@@ -55,8 +55,10 @@ public static class StringsFilesExtension
         var sb = new PooledStringBuilder(value.Length + timestamp.Length + 1);
         try
         {
-            AppendWithoutWhiteSpace(value, ref sb);
-            sb.Append('-');
+            AppendSafeFileNameText(value, ref sb);
+            if (sb.Length > 0)
+                sb.Append('-');
+
             sb.Append(timestamp);
             return sb.ToString();
         }
@@ -78,14 +80,15 @@ public static class StringsFilesExtension
         Span<char> timestamp = stackalloc char[19];
         converted.TryFormat(timestamp, out int written, "yyyy-MM-dd--HH-mm-ss", CultureInfo.InvariantCulture);
 
-        int capacity = (value?.Length ?? 0) + written + extension.Length + 39;
+        int capacity = (value?.Length ?? 0) + written + (extension?.Length ?? 0) + 39;
         var sb = new PooledStringBuilder(capacity);
         try
         {
             if (value is not null)
             {
-                AppendWithoutWhiteSpace(value, ref sb);
-                sb.Append('-');
+                AppendSafeFileNameText(value, ref sb);
+                if (sb.Length > 0)
+                    sb.Append('-');
             }
 
             for (var i = 0; i < written; i++)
@@ -93,8 +96,14 @@ public static class StringsFilesExtension
 
             sb.Append('-');
             sb.Append(Guid.NewGuid());
+
+            ReadOnlySpan<char> extensionSpan = extension.AsSpan().Trim().TrimStart('.');
+            int beforeExtension = sb.Length;
             sb.Append('.');
-            sb.Append(extension);
+            AppendSafeFileNameText(extensionSpan, ref sb);
+
+            if (sb.Length == beforeExtension + 1)
+                sb.Shrink(1);
 
             return sb.ToString();
         }
@@ -104,23 +113,28 @@ public static class StringsFilesExtension
         }
     }
 
-    private static void AppendWithoutWhiteSpace(string value, ref PooledStringBuilder builder)
+    private static void AppendSafeFileNameText(ReadOnlySpan<char> value, ref PooledStringBuilder builder)
     {
-        ReadOnlySpan<char> span = value;
         var segmentStart = 0;
 
-        for (var i = 0; i < span.Length; i++)
+        for (var i = 0; i < value.Length; i++)
         {
-            if (!char.IsWhiteSpace(span[i]))
+            if (!char.IsWhiteSpace(value[i]) && !IsInvalidFileNameChar(value[i]))
                 continue;
 
             if (i > segmentStart)
-                builder.Append(span[segmentStart..i]);
+                builder.Append(value[segmentStart..i]);
 
             segmentStart = i + 1;
         }
 
-        if (segmentStart < span.Length)
-            builder.Append(span[segmentStart..]);
+        if (segmentStart < value.Length)
+            builder.Append(value[segmentStart..]);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static bool IsInvalidFileNameChar(char value)
+    {
+        return char.IsControl(value) || value is '<' or '>' or ':' or '"' or '/' or '\\' or '|' or '?' or '*';
     }
 }
